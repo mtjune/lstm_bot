@@ -30,9 +30,6 @@ keys_lstmbot = None
 with open('keys_lstmbot.yml', 'r') as f:
     keys_lstmbot = yaml.load(f)
 
-with open('keys_mtjuney.yml', 'r') as f:
-    keys_mtjuney = yaml.load(f)
-
 
 # api = OAuth1Session(keys_lstmbot['CONSUMER_KEY'], keys_lstmbot['CONSUMER_SECRET'], keys_lstmbot['ACCESS_TOKEN'], keys_lstmbot['ACCESS_SECRET'])
 # url = "https://api.twitter.com/1.1/users/lookup.json"
