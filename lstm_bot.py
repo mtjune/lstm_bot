@@ -49,8 +49,6 @@ with open('keys_mtjuney.yml', 'r') as f:
 #
 # logger = logger_setting()
 
-tweet_q = queue.Queue(maxsize=2)
-
 
 
 def get_tweet_stream():
@@ -80,8 +78,8 @@ def get_tweet_stream():
                     text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
                     text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
                     text = text.strip()
-                    if not tweet_q.full():
-                        tweet_q.put(text)
+                    print(text)
+
 
     except IncompleteRead as e:
         print( '=== エラー内容 ===')

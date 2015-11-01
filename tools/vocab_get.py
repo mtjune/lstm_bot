@@ -87,7 +87,8 @@ def get_tweet_streaming():
                     text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
                     text = text.strip()
                     if not tweet_q.full():
-                        tweet_q.put(text)
+                        # tweet_q.put(text)
+                        print(text)
 
     except IncompleteRead as e:
         print( '=== エラー内容 ===')
@@ -148,9 +149,10 @@ def get_vocab():
 
 
 if __name__ == '__main__':
-    stream = threading.Thread(target=get_tweet_streaming)
-    stream.daemon = True
-    stream.start()
-
-    get_vocab()
-    stream.join()
+    # stream = threading.Thread(target=get_tweet_streaming)
+    # stream.daemon = True
+    # stream.start()
+    #
+    # get_vocab()
+    # stream.join()
+    get_tweet_streaming()
