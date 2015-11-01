@@ -1,0 +1,7 @@
+*.pyc
+
+*.model
+
+keys*.yml
+
+*.conf
