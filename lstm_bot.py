@@ -21,6 +21,8 @@ keys_lstmbot = None
 with open('keys_lstmbot.yml', 'r') as f:
     keys_lstmbot = yaml.load(f)
 
+print(keys_lstmbot)
+
 # with open('keys_mtjuney.yml', 'r') as f:
 #     keys_mtjuney = yaml.load(f)
 
