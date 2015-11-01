@@ -154,7 +154,6 @@ def get_tweet_rest():
         if len(tweets_j) != 0:
             last_tweetid = tweets_j[0]['id']
 
-        print('----------------------')
 
         time.sleep(120)
 
@@ -186,7 +185,7 @@ def get_vocab():
 
         vocab_i += 1
         if vocab_i % 50 == 0:
-            print('tweet {} vocab_size: {}'.format(vocab_i, len(vocab_set)))
+            print('tweet {} vocab_size: {} vocab_count_size: {}'.format(vocab_i, len(vocab_set), len(vocab_count)))
 
 
 
