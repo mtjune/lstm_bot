@@ -21,8 +21,11 @@ from six.moves import queue
 import igo
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--vocabset', '-s', default='vocab_set')
-parser.add_argument('--vocabcount', '-c', default='vocab_count')
+parser.add_argument('--vocabsetin', '-si', default=None)
+parser.add_argument('--vocabcountin', '-ci', default=None)
+parser.add_argument('--filter', '-f', default=1, type=int)
+parser.add_argument('--vocabset', '-s', default='dumps/vocab_set.dump')
+parser.add_argument('--vocabcount', '-c', default='dumps/vocab_count.dump')
 args = parser.parse_args()
 
 
@@ -166,12 +169,20 @@ def get_tweet_rest():
 
 
 def get_vocab():
-    FILTER_NUM = 2
 
-    vocab_set = set()
-    vocab_count = {}
+    if args.vocabsetin:
+        with open(args.vocabsetin, 'rb') as f:
+            vocab_set = pickle.load(f)
+    else:
+        vocab_set = set()
 
-    vocab_i = 0
+    if args.vocabcountin:
+        with open(args.vocabcountin, 'rb') as f:
+            vocab_count = pickle.load(f)
+    else:
+        vocab_count = {}
+
+    vocab_i = 1
     while True:
 
         text = tweet_q.get()
@@ -183,22 +194,23 @@ def get_vocab():
             if n_word not in vocab_set:
                 if n_word in vocab_count:
                     vocab_count[n_word] += 1
-                    if vocab_count[n_word] > FILTER_NUM:
+                    if vocab_count[n_word] > args.filter:
                         vocab_set.add(n_word)
                         del vocab_count[n_word]
                 else:
                     vocab_count[n_word] = 1
 
 
-        vocab_i += 1
+
         if vocab_i % 50 == 0:
             print('tweet {} vocab_size: {} vocab_count_size: {}'.format(vocab_i, len(vocab_set), len(vocab_count)))
-            with open('dumps/{}.dump'.format(args.vocabset), 'wb') as f:
+            with open(args.vocabset, 'wb') as f:
                 pickle.dump(vocab_set, f, -1)
-            with open('dumps/{}.dump'.format(args.vocabcount), 'wb') as f:
+            with open(args.vocabcount, 'wb') as f:
                 pickle.dump(vocab_count, f, -1)
             print('dumped {}, {}'.format(args.vocabset, args.vocabcount))
 
+        vocab_i += 1
 
 
 
