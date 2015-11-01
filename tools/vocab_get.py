@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import time
 import yaml
 import json
 import re
@@ -16,19 +17,23 @@ from http.client import IncompleteRead
 import six.moves.cPickle as pickle
 from six.moves import queue
 
-import igo
+# import igo
 
-DIC_DIR = "/home/yamajun/workspace/tmp/igo_ipadic"
-tagger = igo.tagger.Tagger(DIC_DIR)
-def igo_parse(text):
-    words = tagger.parse(text)
-    outputs = [word.surface for word in words if word.feature.split(',')[0] == '名詞']
-    return outputs
+# DIC_DIR = "/home/yamajun/workspace/tmp/igo_ipadic"
+# tagger = igo.tagger.Tagger(DIC_DIR)
+# def igo_parse(text):
+#     words = tagger.parse(text)
+#     outputs = [word.surface for word in words if word.feature.split(',')[0] == '名詞']
+#     return outputs
 
 
 keys_lstmbot = None
 with open('keys_lstmbot.yml', 'r') as f:
     keys_lstmbot = yaml.load(f)
+
+keys_mtjuney = None
+with open('keys_mtjuney.yml', 'r') as f:
+    keys_mtjuney = yaml.load(f)
 
 
 # api = OAuth1Session(keys_lstmbot['CONSUMER_KEY'], keys_lstmbot['CONSUMER_SECRET'], keys_lstmbot['ACCESS_TOKEN'], keys_lstmbot['ACCESS_SECRET'])
@@ -55,7 +60,7 @@ with open('keys_lstmbot.yml', 'r') as f:
 #
 # logger = logger_setting()
 
-tweet_q = queue.Queue(maxsize=2)
+tweet_q = queue.Queue(maxsize=200)
 
 
 
@@ -115,35 +120,73 @@ def get_tweet_streaming():
 
 
 
+def get_tweet_rest():
+    global keys_lstmbot
 
-def get_vocab():
-    FILTER_NUM = 2
+    api = OAuth1Session(keys_mtjuney['CONSUMER_KEY'], keys_mtjuney['CONSUMER_SECRET'], keys_mtjuney['ACCESS_TOKEN'], keys_mtjuney['ACCESS_SECRET'])
+    url = "https://api.twitter.com/1.1/statuses/home_timeline.json"
 
-    vocab_set = set()
-    vocab_count = {}
 
-    vocab_i = 0
+    last_tweetid = None
+
     while True:
 
-        text = tweet_q.get()
+        if last_tweetid:
+            params = {'count': 200, 'exclude_replies': True, 'since_id': last_tweetid}
+        else:
+            params = {'count': 200, 'exclude_replies': True}
 
-        n_words = igo_parse(text)
-        n_words_set = set(n_words)
+        tweets = api.get(url, params=params)
+        tweets_j = tweets.json()
 
-        for n_word in n_words_set:
-            if n_word not in vocab_set:
-                if n_word in vocab_count:
-                    vocab_count[n_word] += 1
-                    if vocab_count[n_word] > FILTER_NUM:
-                        vocab_set.add(n_word)
-                        del vocab_count[n_word]
-                else:
-                    vocab_count[n_word] = 1
+        for tweet in tweets_j:
+            text = tweet['text']
+            if re.match(r'^RT', text):
+                continue
+
+            text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
+            text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
+            text = text.strip()
+            if not tweet_q.full():
+                # tweet_q.put(text)
+                print(text)
+
+        if len(tweets_j) != 0:
+            last_tweetid = tweets_j[0]['id']
+
+        print('----------------------')
+
+        time.sleep(120)
 
 
-        vocab_i += 1
-        if vocab_i % 1000 == 0:
-            print('tweet {} vocab_size: {}'.format(vocab_i, len(vocab_set)))
+# def get_vocab():
+#     FILTER_NUM = 2
+#
+#     vocab_set = set()
+#     vocab_count = {}
+#
+#     vocab_i = 0
+#     while True:
+#
+#         text = tweet_q.get()
+#
+#         n_words = igo_parse(text)
+#         n_words_set = set(n_words)
+#
+#         for n_word in n_words_set:
+#             if n_word not in vocab_set:
+#                 if n_word in vocab_count:
+#                     vocab_count[n_word] += 1
+#                     if vocab_count[n_word] > FILTER_NUM:
+#                         vocab_set.add(n_word)
+#                         del vocab_count[n_word]
+#                 else:
+#                     vocab_count[n_word] = 1
+#
+#
+#         vocab_i += 1
+#         if vocab_i % 1000 == 0:
+#             print('tweet {} vocab_size: {}'.format(vocab_i, len(vocab_set)))
 
 
 
@@ -155,4 +198,4 @@ if __name__ == '__main__':
     #
     # get_vocab()
     # stream.join()
-    get_tweet_streaming()
+    get_tweet_rest()

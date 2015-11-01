@@ -64,7 +64,7 @@ def get_tweet_stream():
     request = oauth.Request.from_consumer_and_token(consumer, token, http_url=url, parameters=params)
     request.sign_request(oauth.SignatureMethod_HMAC_SHA1(), consumer, token)
     res = urllib.request.urlopen(request.to_url())
-
+    
     try:
         for r in res:
             data = json.loads(r.decode('utf-8'))
