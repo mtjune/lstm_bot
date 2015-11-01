@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import argparse
 import time
 import yaml
 import json
@@ -18,6 +19,12 @@ import six.moves.cPickle as pickle
 from six.moves import queue
 
 import igo
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--vocabset', '-s', default='vocab_set')
+parser.add_argument('--vocabcount', '-c', default='vocab_count')
+args = parser.parse_args()
+
 
 DIC_DIR = "/home/yamajun/workspace/tmp/igo_ipadic"
 tagger = igo.tagger.Tagger(DIC_DIR)
@@ -186,6 +193,11 @@ def get_vocab():
         vocab_i += 1
         if vocab_i % 50 == 0:
             print('tweet {} vocab_size: {} vocab_count_size: {}'.format(vocab_i, len(vocab_set), len(vocab_count)))
+            with open('dumps/{}.dump'.format(args.vocabset), 'wb') as f:
+                pickle.dump(vocab_set, f, -1)
+            with open('dumps/{}.dump'.format(args.vocabcount), 'wb') as f:
+                pickle.dump(vocab_count, f, -1)
+            print('dumped {}, {}'.format(args.vocabset, args.vocabcount))
 
 
 
