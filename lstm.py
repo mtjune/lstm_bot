@@ -81,7 +81,7 @@ class LSTM:
     def _make_initial_state(self, batchsize=1, train=True):
         return {name: chainer.Variable(xp.zeros((batchsize, self.n_units), dtype=np.float32), volatile=not train) for name in ('c1', 'h1', 'c2', 'h2')}
 
-    def _shaping_and_spilit_tweet(self, tweet):
+    def _shaping_and_split_tweet(self, tweet):
         global vocab_in
 
         tweet = tweet.replace('<tweetend>', '')
