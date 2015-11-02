@@ -117,8 +117,8 @@ class LSTM:
 
 
         for i in range(len(tweet_split) - 1):
-            x_data = self.xp.array([self.vocab_in[tweet_split[i]]])
-            y_data = self.xp.array([self.vocab_in[tweet_split[i + 1]]])
+            x_data = self.xp.array([self.vocab_in[tweet_split[i]]], dtype=np.int32)
+            y_data = self.xp.array([self.vocab_in[tweet_split[i + 1]]], dtype=np.int32)
 
             state, y = self._forward_one_step(x_data, state, train=True)
             loss_i = F.softmax_cross_entropy(y, chainer.Variable(y_data, volatile=False))
