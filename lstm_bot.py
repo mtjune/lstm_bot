@@ -14,7 +14,7 @@ import urllib
 from requests_oauthlib import OAuth1Session
 from http.client import IncompleteRead
 
-from six.moves.cPickle as pickle
+import six.moves.cPickle as pickle
 from six.moves import queue
 
 import lstm
