@@ -29,7 +29,7 @@ with open('keys_mtjuney.yml', 'r') as f:
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--vocabin', '-vi', default='dumps/vocab_ready_in.dump')
-parser.add_argument('--vocabout', '-vo', default='dumps/voab_ready_out.dump')
+parser.add_argument('--vocabout', '-vo', default='dumps/vocab_ready_out.dump')
 parser.add_argument('--modelinput', '-mi', default=None)
 parser.add_argument('--modeloutput', '-mo', default='dumps/model_lstm.dump')
 
