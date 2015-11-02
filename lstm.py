@@ -39,7 +39,7 @@ class LSTM:
     DIC_DIR = "/home/yamajun/workspace/tmp/igo_ipadic"
 
     def __init__(self, n_units , vocab_in, vocab_out, gpu=-1):
-        self.self.xp = np
+        self.xp = np
 
         self.tagger = igo.tagger.Tagger(self.DIC_DIR)
 
