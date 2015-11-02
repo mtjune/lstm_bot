@@ -142,7 +142,7 @@ class LSTM:
 
         text_in = first_word
         while True:
-            x_data = self.xp.array([self.vocab[text_in]])
+            x_data = self.xp.array([self.vocab[text_in]], dtype=np.int32)
             state, y = self._forward_one_step(x_data, state, train=False)
             y = F.softmax(y).data.reshape((-1,))
             ind = np.argmax(y)
