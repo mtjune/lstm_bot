@@ -110,7 +110,7 @@ class LSTM:
 
         accum_loss = chainer.Variable(self.xp.zeros((), dtype=np.int32))
 
-        if state_stable:
+        if self.state_stable:
             state = self.state_stable
         else:
             state = self._make_initial_state(batchsize=1, train=True)
