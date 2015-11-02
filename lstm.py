@@ -106,7 +106,7 @@ class LSTM:
         ツイートひとつ分を学習
         """
 
-        tweet_spilit = self._shaping_and_split_tweet(tweet)
+        tweet_split = self._shaping_and_split_tweet(tweet)
 
         accum_loss = chainer.Variable(self.xp.zeros((), dtype=np.int32))
 
