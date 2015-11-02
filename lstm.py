@@ -58,7 +58,7 @@ class LSTM:
         self.optimizer.setup(self.model)
 
 
-    def _igo_parse(text):
+    def _igo_parse(self, text):
         words = self.tagger.parse(text)
         outputs = [word.surface for word in words]
         return outputs
@@ -82,7 +82,7 @@ class LSTM:
         return {name: chainer.Variable(xp.zeros((batchsize, self.n_units), dtype=np.float32), volatile=not train) for name in ('c1', 'h1', 'c2', 'h2')}
 
     def _shaping_and_split_tweet(self, tweet):
-        global vocab_in
+        global vocab_i
 
         tweet = tweet.replace('<tweetend>', '')
 

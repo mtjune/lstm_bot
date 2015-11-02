@@ -3,6 +3,7 @@
 import argparse
 import yaml
 import json
+import time
 import re
 import multiprocessing
 import threading
@@ -78,6 +79,7 @@ def feed_tweet():
 
             text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
             text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
+            text = re.sub(r'[\n\s]+', ' ', text)
             text = text.strip()
             if not tweet_q.full():
                 tweet_q.put(text)
