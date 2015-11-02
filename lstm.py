@@ -108,7 +108,7 @@ class LSTM:
 
         tweet_split = self._shaping_and_split_tweet(tweet)
 
-        accum_loss = chainer.Variable(self.xp.zeros((), dtype=np.int32))
+        accum_loss = chainer.Variable(self.xp.zeros((), dtype=np.float32))
 
         if self.state_stable:
             state = self.state_stable
