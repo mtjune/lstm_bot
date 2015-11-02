@@ -24,7 +24,7 @@ import igo
 
 class LSTM:
 
-    self.xp = None
+    xp = None
 
     GRAD_CLIP = 5    # gradient norm threshold to clip
 
