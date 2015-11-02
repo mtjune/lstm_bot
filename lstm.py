@@ -71,7 +71,7 @@ class LSTM:
     def _forward_one_step(self, x_data, state, train=True):
         # Neural net architecture
         x = chainer.Variable(x_data, volatile=not train)
-        h0 = model.embed(x)
+        h0 = self.model.embed(x)
         h1_in = self.model.l1_x(F.dropout(h0, train=train)) + self.model.l1_h(state['h1'])
         c1, h1 = F.lstm(state['c1'], h1_in)
         h2_in = self.model.l2_x(F.dropout(h1, train=train)) + self.model.l2_h(state['h2'])
