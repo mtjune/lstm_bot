@@ -24,6 +24,8 @@ import igo
 
 class LSTM:
 
+    self.xp = None
+
     GRAD_CLIP = 5    # gradient norm threshold to clip
 
     n_units = None
@@ -36,7 +38,9 @@ class LSTM:
     vocab_out = None
     DIC_DIR = "/home/yamajun/workspace/tmp/igo_ipadic"
 
-    def __init__(self, n_units , vocab_in, vocab_out):
+    def __init__(self, n_units , vocab_in, vocab_out, gpu=-1):
+        self.self.xp = np
+
         self.tagger = igo.tagger.Tagger(self.DIC_DIR)
 
         self.vocab_in = vocab_in
@@ -79,17 +83,16 @@ class LSTM:
 
 
     def _make_initial_state(self, batchsize=1, train=True):
-        return {name: chainer.Variable(xp.zeros((batchsize, self.n_units), dtype=np.float32), volatile=not train) for name in ('c1', 'h1', 'c2', 'h2')}
+        return {name: chainer.Variable(self.xp.zeros((batchsize, self.n_units), dtype=np.float32), volatile=not train) for name in ('c1', 'h1', 'c2', 'h2')}
 
     def _shaping_and_split_tweet(self, tweet):
-        global vocab_i
 
         tweet = tweet.replace('<tweetend>', '')
 
         tweet_split = self._igo_parse(tweet)
 
         for i in range(len(tweet_split)):
-            if tweet_split[i] not in vocab_in:
+            if tweet_split[i] not in self.vocab_in:
                 tweet_split[i] = '<unknown>'
 
 
@@ -105,7 +108,7 @@ class LSTM:
 
         tweet_spilit = self._shaping_and_split_tweet(tweet)
 
-        accum_loss = chainer.Variable(xp.zeros((), dtype=np.int32))
+        accum_loss = chainer.Variable(self.xp.zeros((), dtype=np.int32))
 
         if state_stable:
             state = self.state_stable
@@ -114,8 +117,8 @@ class LSTM:
 
 
         for i in range(len(tweet_split) - 1):
-            x_data = xp.array([self.vocab[tweet_split[i]]])
-            y_data = xp.array([self.vocab[tweet_split[i + 1]]])
+            x_data = self.xp.array([self.vocab[tweet_split[i]]])
+            y_data = self.xp.array([self.vocab[tweet_split[i + 1]]])
 
             state, y = self._forward_one_step(x_data, state, train=True)
             loss_i = F.softmax_cross_entropy(y, chainer.Variable(y_data, volatile=False))
@@ -139,7 +142,7 @@ class LSTM:
 
         text_in = first_word
         while True:
-            x_data = xp.array([self.vocab[text_in]])
+            x_data = self.xp.array([self.vocab[text_in]])
             state, y = self._forward_one_step(x_data, state, train=False)
             y = F.softmax(y).data.reshape((-1,))
             ind = np.argmax(y)
