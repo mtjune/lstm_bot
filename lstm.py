@@ -115,18 +115,23 @@ class LSTM:
         else:
             state = self._make_initial_state(batchsize=1, train=True)
 
-
+        count_train = 0
         for i in range(len(tweet_split) - 1):
+            if tweet_split[i + 1] == '<unknown>':
+                continue
+
             x_data = self.xp.array([self.vocab_in[tweet_split[i]]], dtype=np.int32)
             y_data = self.xp.array([self.vocab_out[tweet_split[i + 1]]], dtype=np.int32)
 
             state, y = self._forward_one_step(x_data, state, train=True)
             loss_i = F.softmax_cross_entropy(y, chainer.Variable(y_data, volatile=False))
             accum_loss += loss_i
+            count_train += 1
 
-        self.optimizer.zero_grads()
-        accum_loss.backward()
-        accum_loss.unchain_backward()
+        if count_train != 0:
+            self.optimizer.zero_grads()
+            accum_loss.backward()
+            accum_loss.unchain_backward()
 
 
     def generate_tweet(self, first_word, state=None):
