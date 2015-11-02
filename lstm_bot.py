@@ -50,7 +50,7 @@ else:
 
 
 
-tweet_q = queue.Queue(maxsize=200)
+tweet_q = queue.Queue(maxsize=300)
 
 def feed_tweet():
     global vocab, tweet_q, keys_mtjuney
@@ -96,17 +96,22 @@ def train_tweet():
     global lstm
 
     count_train = 1
-
+    total_time_train = 0.
     while True:
 
         tweet_text = tweet_q.get()
 
+        start_at = time.time()
         lstm.one_tweet_backward(tweet_text)
+        end_at = time.time()
+        total_time_train += (end_at - start_at)
 
         if count_train % 500 == 0:
-            print('trained {} tweet'.format(count_train))
+            now_at = time.time()
+            print('trained {} tweet ({} tweet/sec)'.format(count_train, float(count_train) / total_time_train))
+            print('\tqueue_size : {}'.format(tweet_q.qsize()))
             lstm.save(args.modeloutput)
-            print('saved model as {}'.format(args.modeloutput))
+            print('\tsaved model as {}'.format(args.modeloutput))
 
         count_train += 1
 
