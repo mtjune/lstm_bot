@@ -51,6 +51,7 @@ def get_tweet_streaming():
     try:
         for r in res.iter_lines():
             if r:
+                print(r.decode())
                 data = json.loads(r.decode())
                 if 'delete' in data.keys():
                     pass
