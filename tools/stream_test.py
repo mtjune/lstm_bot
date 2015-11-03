@@ -40,12 +40,18 @@ def get_tweet_streaming():
     # request.sign_request(oauth.SignatureMethod_HMAC_SHA1(), consumer, token)
     # res = urllib.request.urlopen(request.to_url())
 
-    api = OAuth1Session(keys_mtjuney['CONSUMER_KEY'], keys_mtjuney['CONSUMER_SECRET'], keys_mtjuney['ACCESS_TOKEN'], keys_mtjuney['ACCESS_SECRET'])
-    url = 'https://stream.twitter.com/1.1/statuses/filter.json?track=twitter'
+    api = OAuth1Session(
+        keys_mtjuney['CONSUMER_KEY'],
+        client_secret=keys_mtjuney['CONSUMER_SECRET'],
+        resource_owner_key=keys_mtjuney['ACCESS_TOKEN'],
+        resource_owner_secret=keys_mtjuney['ACCESS_SECRET']
+    )
 
-    # params = {}
+    url = 'https://stream.twitter.com/1.1/statuses/sample.json'
 
-    res = api.get(url, stream=True)
+    params = {}
+
+    res = api.get(url, params=params, stream=True)
 
 
     try:
