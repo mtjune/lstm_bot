@@ -52,45 +52,84 @@ else:
 
 tweet_q = queue.Queue(maxsize=300)
 
+# def feed_tweet():
+#     global vocab, tweet_q, keys_mtjuney
+#
+#     api = OAuth1Session(keys_mtjuney['CONSUMER_KEY'], keys_mtjuney['CONSUMER_SECRET'], keys_mtjuney['ACCESS_TOKEN'], keys_mtjuney['ACCESS_SECRET'])
+#     url = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+#
+#
+#     last_tweetid = None
+#
+#
+#     while True:
+#
+#         if last_tweetid:
+#             params = {'count': 200, 'exclude_replies': True, 'since_id': last_tweetid}
+#         else:
+#             params = {'count': 200, 'exclude_replies': True}
+#
+#         tweets = api.get(url, params=params)
+#         tweets_j = tweets.json()
+#
+#         for tweet in tweets_j:
+#             text = tweet['text']
+            # if re.match(r'^RT', text):
+            #     continue
+            #
+            # text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
+            # text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
+            # text = re.sub(r'[\n\s]+', ' ', text)
+            # text = text.strip()
+            # if not tweet_q.full():
+            #     tweet_q.put(text)
+#                 # print(text)
+#
+#         if len(tweets_j) != 0:
+#             last_tweetid = tweets_j[0]['id']
+#
+#
+#         time.sleep(90)
+
+
 def feed_tweet():
-    global vocab, tweet_q, keys_mtjuney
+    global tweet_q, keys_mtjuney
 
-    api = OAuth1Session(keys_mtjuney['CONSUMER_KEY'], keys_mtjuney['CONSUMER_SECRET'], keys_mtjuney['ACCESS_TOKEN'], keys_mtjuney['ACCESS_SECRET'])
-    url = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+    api = OAuth1Session(
+        keys_mtjuney['CONSUMER_KEY'],
+        client_secret=keys_mtjuney['CONSUMER_SECRET'],
+        resource_owner_key=keys_mtjuney['ACCESS_TOKEN'],
+        resource_owner_secret=keys_mtjuney['ACCESS_SECRET']
+    )
+
+    url = 'https://userstream.twitter.com/1.1/user.json'
+
+    params = {}
+
+    res = api.get(url, params=params, stream=True)
 
 
-    last_tweetid = None
-
-
-    while True:
-
-        if last_tweetid:
-            params = {'count': 200, 'exclude_replies': True, 'since_id': last_tweetid}
-        else:
-            params = {'count': 200, 'exclude_replies': True}
-
-        tweets = api.get(url, params=params)
-        tweets_j = tweets.json()
-
-        for tweet in tweets_j:
-            text = tweet['text']
-            if re.match(r'^RT', text):
+    try:
+        for r in res.iter_lines():
+            if not r:
                 continue
+            data = json.loads(r.decode())
+            if 'delete' in data.keys() or 'lang' not in data:
+                pass
+            else:
+                if data['lang'] in ['ja']:
+                    text = data['text']
 
-            text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
-            text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
-            text = re.sub(r'[\n\s]+', ' ', text)
-            text = text.strip()
-            if not tweet_q.full():
-                tweet_q.put(text)
-                # print(text)
+                    if re.match(r'^(RT|@[a-zA-Z0-9]+)', text):
+                        continue
 
-        if len(tweets_j) != 0:
-            last_tweetid = tweets_j[0]['id']
-
-
-        time.sleep(90)
-
+                    text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
+                    text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
+                    text = re.sub(r'[\n\s]+', ' ', text)
+                    text = text.strip()
+                    if not tweet_q.full():
+                        tweet_q.put(text)
+                    print(text)
 
 def train_tweet():
     global lstm

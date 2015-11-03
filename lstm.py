@@ -118,15 +118,17 @@ class LSTM:
         count_train = 0
         for i in range(len(tweet_split) - 1):
             if tweet_split[i + 1] == '<unknown>':
-                continue
+                x_data = self.xp.array([self.vocab_in[tweet_split[i]]], dtype=np.int32)
+                state, y = self._forward_one_step(x_data, state, train=True)
 
-            x_data = self.xp.array([self.vocab_in[tweet_split[i]]], dtype=np.int32)
-            y_data = self.xp.array([self.vocab_out[tweet_split[i + 1]]], dtype=np.int32)
+            else:
+                x_data = self.xp.array([self.vocab_in[tweet_split[i]]], dtype=np.int32)
+                y_data = self.xp.array([self.vocab_out[tweet_split[i + 1]]], dtype=np.int32)
 
-            state, y = self._forward_one_step(x_data, state, train=True)
-            loss_i = F.softmax_cross_entropy(y, chainer.Variable(y_data, volatile=False))
-            accum_loss += loss_i
-            count_train += 1
+                state, y = self._forward_one_step(x_data, state, train=True)
+                loss_i = F.softmax_cross_entropy(y, chainer.Variable(y_data, volatile=False))
+                accum_loss += loss_i
+                count_train += 1
 
         if count_train != 0:
             self.optimizer.zero_grads()
