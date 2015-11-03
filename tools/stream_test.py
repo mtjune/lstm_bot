@@ -41,19 +41,19 @@ def get_tweet_streaming():
     # res = urllib.request.urlopen(request.to_url())
 
     api = OAuth1Session(keys_mtjuney['CONSUMER_KEY'], keys_mtjuney['CONSUMER_SECRET'], keys_mtjuney['ACCESS_TOKEN'], keys_mtjuney['ACCESS_SECRET'])
-    url = 'https://stream.twitter.com/1.1/statuses/sample.json'
+    url = 'https://stream.twitter.com/1.1/statuses/filter.json?track=twitter'
 
-    params = {}
+    # params = {}
 
-    res = api.get(url, params=params, stream=True)
+    res = api.get(url, stream=True)
 
 
     try:
         for r in res.iter_lines():
             if r:
-                print(r.decode())
+                # print(r.decode())
                 data = json.loads(r.decode())
-                if 'delete' in data.keys():
+                if 'delete' in data.keys() or 'lang' not in data:
                     pass
                 else:
                     if data['lang'] in ['ja']:
