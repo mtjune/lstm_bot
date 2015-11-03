@@ -129,10 +129,21 @@ def feed_tweet():
                     text = text.strip()
                     if not tweet_q.full():
                         tweet_q.put(text)
-                    print(text)
+
+    except Exception as e:
+        print( '=== エラー内容 ===')
+        print( 'type:' + str(type(e)))
+        print( 'args:' + str(e.args))
+        print( 'message:' + str(e.message))
+        print( 'e self:' + str(e))
+
+    except:
+        print( "error.")
+
+
 
 def train_tweet():
-    global lstm
+    global lstm, tweet_q
 
     count_train = 1
     total_time_train = 0.
