@@ -37,16 +37,11 @@ parser.add_argument('--modeloutput', '-mo', default='dumps/model_lstm.dump')
 args = parser.parse_args()
 
 
-
-if args.modelinput:
-    with open(args.modelinput, 'rb') as f:
-        lstm = pickle.load(f)
-else:
-    with open(args.vocabin, 'rb') as f:
-        vocabin = pickle.load(f)
-    with open(args.vocabout, 'rb') as f:
-        vocabout = pickle.load(f)
-    lstm = lstm.LSTM(650, vocabin, vocabout)
+with open(args.vocabin, 'rb') as f:
+    vocabin = pickle.load(f)
+with open(args.vocabout, 'rb') as f:
+    vocabout = pickle.load(f)
+lstm = lstm.LSTM(650, vocabin, vocabout, loadpath=args.modelinput)
 
 
 

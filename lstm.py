@@ -38,7 +38,7 @@ class LSTM:
     vocab_out = None
     DIC_DIR = "/home/yamajun/workspace/tmp/igo_ipadic"
 
-    def __init__(self, n_units , vocab_in, vocab_out, gpu=-1):
+    def __init__(self, n_units , vocab_in, vocab_out, loadpath=None, gpu=-1):
         self.xp = np
 
         self.tagger = igo.tagger.Tagger(self.DIC_DIR)
@@ -48,14 +48,20 @@ class LSTM:
 
         self.n_units = n_units
 
-        self.model = chainer.FunctionSet(
-            embed=F.EmbedID(len(self.vocab_in), n_units),
-            l1_x=F.Linear(self.n_units, 4 * self.n_units),
-            l1_h=F.Linear(self.n_units, 4 * self.n_units),
-            l2_x=F.Linear(self.n_units, 4 * self.n_units),
-            l2_h=F.Linear(self.n_units, 4 * self.n_units),
-            l3=F.Linear(self.n_units, len(self.vocab_out)),
-        )
+        if loadpath:
+            with open(loadpath, 'rb') as f:
+                self.model = pickle.load(f)
+
+        else:
+            self.model = chainer.FunctionSet(
+                embed=F.EmbedID(len(self.vocab_in), n_units),
+                l1_x=F.Linear(self.n_units, 4 * self.n_units),
+                l1_h=F.Linear(self.n_units, 4 * self.n_units),
+                l2_x=F.Linear(self.n_units, 4 * self.n_units),
+                l2_h=F.Linear(self.n_units, 4 * self.n_units),
+                l3=F.Linear(self.n_units, len(self.vocab_out)),
+            )
+
 
 
         self.optimizer = optimizers.Adam()
