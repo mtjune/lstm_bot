@@ -50,21 +50,21 @@ def get_tweet_streaming():
 
     try:
         for r in res.iter_lines():
-            data = json.loads(r.decode())
-            if 'delete' in data.keys():
-                pass
-            else:
-                if data['lang'] in ['ja']:
-                    text = data['text']
+            if r:
+                data = json.loads(r.decode())
+                if 'delete' in data.keys():
+                    pass
+                else:
+                    if data['lang'] in ['ja']:
+                        text = data['text']
 
-                    if re.match(r'^[(RT)【]', text):
-                        continue
+                        if re.match(r'^[(RT)【]', text):
+                            continue
 
-                    text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
-                    text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
-                    text = text.strip()
-
-                    print(text)
+                        text = re.sub(r'@[a-zA-Z0-9_]{1,15}', '', text)
+                        text = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
+                        text = text.strip()
+                        print(text)
 
     except IncompleteRead as e:
         print( '=== エラー内容 ===')
