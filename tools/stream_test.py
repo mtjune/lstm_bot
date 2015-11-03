@@ -30,19 +30,27 @@ with open('keys_mtjuney.yml', 'r') as f:
 
 def get_tweet_streaming():
     global keys_lstmbot, keys_mtjuney
-    consumer = oauth.Consumer(key=keys_mtjuney['CONSUMER_KEY'], secret=keys_mtjuney['CONSUMER_SECRET'])
-    token = oauth.Token(key=keys_mtjuney['ACCESS_TOKEN'], secret=keys_mtjuney['ACCESS_SECRET'])
+    # consumer = oauth.Consumer(key=keys_mtjuney['CONSUMER_KEY'], secret=keys_mtjuney['CONSUMER_SECRET'])
+    # token = oauth.Token(key=keys_mtjuney['ACCESS_TOKEN'], secret=keys_mtjuney['ACCESS_SECRET'])
+    #
+    # url = 'https://stream.twitter.com/1.1/statuses/sample.json'
+    # params = {}
+    #
+    # request = oauth.Request.from_consumer_and_token(consumer, token, http_url=url, parameters=params)
+    # request.sign_request(oauth.SignatureMethod_HMAC_SHA1(), consumer, token)
+    # res = urllib.request.urlopen(request.to_url())
 
+    api = OAuth1Session(keys_mtjuney['CONSUMER_KEY'], keys_mtjuney['CONSUMER_SECRET'], keys_mtjuney['ACCESS_TOKEN'], keys_mtjuney['ACCESS_SECRET'])
     url = 'https://stream.twitter.com/1.1/statuses/sample.json'
+
     params = {}
 
-    request = oauth.Request.from_consumer_and_token(consumer, token, http_url=url, parameters=params)
-    request.sign_request(oauth.SignatureMethod_HMAC_SHA1(), consumer, token)
-    res = urllib.request.urlopen(request.to_url())
+    res = api.get(url, params=params, stream=True)
+
 
     try:
-        for r in res:
-            data = json.loads(r.decode('utf-8'))
+        for r in res.iter_lines():
+            data = json.loads(r.decode())
             if 'delete' in data.keys():
                 pass
             else:
